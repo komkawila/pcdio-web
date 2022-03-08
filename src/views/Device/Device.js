@@ -457,9 +457,10 @@ import {
             </Row>
           </CardBody>
         </Card>
-        <Button color="danger" onClick={() => history.push(`/group-detail`)}>Back</Button>
+        <Button color="danger" onClick={() => history.push(`/user`)}>Back</Button>
         <span className='align-middle ms-1'/>
-        <Button color="primary" onClick={() => history.push(`/device-add?username=${username}`)}>+ Add Device</Button>
+        <Button color="primary">+ Add Device</Button>
+        {/* <Button color="primary" onClick={() => history.push(`/device-add?username=${username}`)}>+ Add Device</Button> */}
         <span className='align-middle ms-1'/>
         <Button color="warning" onClick={() => fetchApi()}>Refresh</Button>
         <span className='align-middle ms-1'/>
