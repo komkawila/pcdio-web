@@ -67,10 +67,11 @@ import {
     const [modaldata, setModaldata] = useState([])
     const [show, setShow] = useState(false)
     const [edit, setEdit] = useState(false)
-    const [showdetail, setShowdetail] = useState(false)
     const [countBlank, setCountBlank] = useState(0)
     const [countDeposit, setCountdeposit] = useState(0)
     
+    const [addshow, setAddshow] = useState(false)
+    const [devicename, setDevicename] = useState("")
     const fetchApi = async () => {
         // await axios.get(`${url}/web/device/${username}`).then((res) => {
         //     console.log("res.data = ")
@@ -123,6 +124,7 @@ import {
     }
 
     const editFunc = (data) => {
+      console.log(data)
       setModaldata(data)
       setShow(true)
       setEdit(true)
@@ -152,8 +154,8 @@ import {
             buttonsStyling: false
           }).then(function (result) {
             if (result.value) {
-              axios.delete(`${url}/api/device/device/device_id/${id.device_id}`).then((res) => {
-                if (res.data.data.err) {
+              axios.delete(`${url}/web/device/${id.device_id}`).then((res) => {
+                if (res.data.err) {
                   Swal.fire({
                     title: 'Error',
                     icon: 'error',
@@ -240,11 +242,64 @@ import {
       //         })
       //   }        
       // }
+
+      const adddeviceFunc = () => {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: `Confirm Add Device`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, Add Device it!',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-danger ms-1'
+          },
+          buttonsStyling: false
+        }).then(function (result) {
+          if (result.value) {
+            axios.post(`${url}/web/device`, {
+                user_username: username,
+                device_name: devicename
+              }).then((res) => {
+              if (res.data.err) {
+                Swal.fire({
+                  title: 'Error',
+                  icon: 'error',
+                  customClass: {
+                  confirmButton: 'btn btn-danger'
+                }
+              })
+              return 0
+              } else {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Add Information!',
+                  text: 'Successfully Added.',
+                  customClass: {
+                    confirmButton: 'btn btn-success'
+                  }
+                }).then(function (result) {
+                  if (result.value) {
+                    // window.location.reload(false)
+                    setAddshow(false)
+                    setDevicename("")
+                    setShow(false)
+                    setEdit(false)
+                    fetchApi()
+                  }
+                })                                     
+              }
+            })              
+          }
+        })
+      }
+
+
       const updateFunc = () => {
         // console.log(modaldata)
           Swal.fire({
               title: 'Are you sure?',
-              text: `Confirm Update '${modaldata.group_name}'`,
+              text: `Confirm Update`,
               icon: 'warning',
               showCancelButton: true,
               confirmButtonText: 'Yes, update it!',
@@ -255,16 +310,10 @@ import {
               buttonsStyling: false
             }).then(function (result) {
               if (result.value) {
-                axios.put(`${url}/api/device/device/device_id/${modaldata.device_id}`, {
-                    device_name: modaldata.device_name,
-                    group_id: modaldata.group_id,
-                    log_id: modaldata.log_id,
-                    user_id: modaldata.user_id,
-                    device_password: modaldata.device_password,
-                    device_status: modaldata.device_status,
-                    device_success: modaldata.device_success
+                axios.patch(`${url}/web/deviceedit/devicename/${modaldata.device_id}`, {
+                    values: modaldata.device_name
                   }).then((res) => {
-                  if (res.data.data.err) {
+                  if (res.data.err) {
                     Swal.fire({
                       title: 'Error',
                       icon: 'error',
@@ -324,6 +373,9 @@ import {
               <span className='align-middle ms-1'/>
               <Trash size={15} onClick={() => deleteFunc(data)} style={{cursor:'pointer'}}/>
               <span className='align-middle ms-1'/>
+              <Box size={15} onClick={() => deleteFunc(data)} style={{cursor:'pointer'}}/>
+              <span className='align-middle ms-1'/>
+              
               
             </div>
           )
@@ -459,7 +511,7 @@ import {
         </Card>
         <Button color="danger" onClick={() => history.push(`/user`)}>Back</Button>
         <span className='align-middle ms-1'/>
-        <Button color="primary">+ Add Device</Button>
+        <Button color="primary" onClick={() => setAddshow(true)}>+ Add Device</Button>
         {/* <Button color="primary" onClick={() => history.push(`/device-add?username=${username}`)}>+ Add Device</Button> */}
         <span className='align-middle ms-1'/>
         <Button color="warning" onClick={() => fetchApi()}>Refresh</Button>
@@ -503,60 +555,31 @@ import {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={showdetail} className='modal-dialog-centered modal-lg'>
+        <Modal isOpen={addshow} className='modal-dialog-centered modal-lg'>
           <ModalHeader className='bg-transparent'></ModalHeader>
           <ModalBody className='px-sm-5 mx-50 pb-5'>
             <div className='text-center mb-2'>
-              <h1 className='mb-1'>Detail Information</h1>
+              <h1 className='mb-1'>Add Device</h1>
               {/* <p>Updating user details will receive a privacy audit.</p> */}
             </div>
             <Row tag='form' className='gy-1 pt-75'>
               <Col md={12} xs={12}>
                 <Label className='form-label' for='Name'>
-                  Name
+                  Devicename
                 </Label>
-                <Input type='text' placeholder='Name' defaultValue={modaldata.device_name} value={modaldata.device_name} onChange={(e) => setModaldata({...modaldata, device_name:e.target.value})} disabled={!edit}/>
-              </Col>          
-                <Col md={12} xs={12}>
-                    <Label className='form-label' for='Name'>
-                    Send People
-                    </Label>
-                    <img src={`${url}/images/${modaldata.log_imgsendpeople}`} width='100%' height='100%'/>
-                </Col>
-                <Col md={12} xs={12}>
-                    <br/>
-                    <br/>
-                    <Label className='form-label' for='Name'>
-                    Image Object
-                    </Label>
-                    <img src={`${url}/images/${modaldata.log_imgobject}`} width='100%' height='100%'/>
-                </Col>
-                <br/>
-                <Col md={12} xs={12}>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <Label className='form-label' for='Name'>
-                    Receive
-                    </Label>
-                    <img src={`${url}/images/${modaldata.log_imgreceive}`} width='100%' height='100%'/>
-                </Col>
-
-              
-              <Col xs={12} className='text-center mt-2 pt-50'>       
-                    <br/>
-                    <br/>
-                    <br/>       
-                    <br/>
-                    <br/>     
-                <Button type='reset' color='danger' outline onClick={() => setShowdetail(false)}>
-                  Close People
+                <Input type='text' placeholder='Devicename' value={devicename} onChange={(e) => setDevicename(e.target.value)}/>
+              </Col>
+              <Col xs={12} className='text-center mt-2 pt-50'>
+                <Button className='me-1' color='primary' onClick={adddeviceFunc}>
+                  Submit
+                </Button>
+                <Button type='reset' color='danger' outline onClick={() => setAddshow(false)}>
+                  Close
                 </Button>
               </Col>
             </Row>
           </ModalBody>
         </Modal>
-        
       </div>
     )
   }
