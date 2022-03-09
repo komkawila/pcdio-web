@@ -71,7 +71,9 @@ import {
     const [countDeposit, setCountdeposit] = useState(0)
     
     const [addshow, setAddshow] = useState(false)
-    const [devicename, setDevicename] = useState("")
+    const [devicename, setDevicename] = useState("")    
+
+    const [showmanager, setShowmanager] = useState(false)
     const fetchApi = async () => {
         // await axios.get(`${url}/web/device/${username}`).then((res) => {
         //     console.log("res.data = ")
@@ -243,6 +245,13 @@ import {
       //   }        
       // }
 
+      const showeditdeviceFunc = () => {
+        setModaldata(data)
+        setShowmanager(true)
+      }
+      const editdeviceFunc = () => {
+        setShowmanager(false)
+      }
       const adddeviceFunc = () => {
         Swal.fire({
           title: 'Are you sure?',
@@ -373,10 +382,8 @@ import {
               <span className='align-middle ms-1'/>
               <Trash size={15} onClick={() => deleteFunc(data)} style={{cursor:'pointer'}}/>
               <span className='align-middle ms-1'/>
-              <Box size={15} onClick={() => deleteFunc(data)} style={{cursor:'pointer'}}/>
+              <Box size={15} onClick={() => showeditdeviceFunc(data)} style={{cursor:'pointer'}}/>
               <span className='align-middle ms-1'/>
-              
-              
             </div>
           )
         }
@@ -574,6 +581,32 @@ import {
                   Submit
                 </Button>
                 <Button type='reset' color='danger' outline onClick={() => setAddshow(false)}>
+                  Close
+                </Button>
+              </Col>
+            </Row>
+          </ModalBody>
+        </Modal>
+
+        <Modal isOpen={showmanager} className='modal-dialog-centered modal-lg'>
+          <ModalHeader className='bg-transparent'></ModalHeader>
+          <ModalBody className='px-sm-5 mx-50 pb-5'>
+            <div className='text-center mb-2'>
+              <h1 className='mb-1'>Add Device</h1>
+              {/* <p>Updating user details will receive a privacy audit.</p> */}
+            </div>
+            <Row tag='form' className='gy-1 pt-75'>
+              <Col md={12} xs={12}>
+                <Label className='form-label' for='Name'>
+                  Devicename
+                </Label>
+                <Input type='text' placeholder='Name' defaultValue={modaldata.device_name} value={modaldata.device_name} onChange={(e) => setModaldata({...modaldata, device_name:e.target.value})} disabled={!edit}/>
+              </Col>
+              <Col xs={12} className='text-center mt-2 pt-50'>
+                <Button className='me-1' color='primary' onClick={editdeviceFunc}>
+                  Submit
+                </Button>
+                <Button type='reset' color='danger' outline onClick={() => setShowmanager(false)}>
                   Close
                 </Button>
               </Col>
